@@ -26,6 +26,6 @@ func main() {
 	fmt.Println(u.CTLD)       // "tr"
 	fmt.Println(u.Path)       // "/blog/archlinux-install.html"
 	fmt.Println(u.Queries)    // map[q:["a", "lovely", "query"], z:["another", "query"]
-	fmt.Println(u.isLive)     // false
+	fmt.Println(u.IsLive)     // false
 }
 ```
