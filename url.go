@@ -2,8 +2,10 @@ package url
 
 import (
 	"errors"
+	nethttp "net/http"
 	neturl "net/url"
 	"strings"
+	"time"
 )
 
 // URL is a struct that you can extract each element of an URL.
@@ -86,6 +88,21 @@ func stringSliceContains(a []string, x string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+// isLive returns whether URL.Rawurl is live or not.
+func (u *URL) IsLive() bool {
+	// Set timeout.
+	client := nethttp.Client{
+		Timeout: 5 * time.Second,
+	}
+	_, err := client.Get(u.Rawurl)
+
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 // countryTopLevelDomains includes all country-code-top-level-domains.

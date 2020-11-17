@@ -134,3 +134,37 @@ func equalStringSlice(a, b []string) bool {
 
 	return true
 }
+
+func TestIsLive(t *testing.T) {
+	var testValues = []struct {
+		Input string
+		Want  bool
+	}{
+		{
+			Input: "https://yagizdegirmenci.com",
+			Want:  true,
+		},
+		{
+			Input: "https://golang.org",
+			Want:  true,
+		},
+		{
+			Input: "https://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.com",
+			Want:  false,
+		},
+		{
+			Input: "https://randomsiteadi.com",
+			Want:  false,
+		},
+	}
+
+	for _, testValue := range testValues {
+		u, _ := NewURL(testValue.Input)
+		response := u.IsLive()
+
+		if response != testValue.Want {
+			t.Fatalf("[%s] Result from URL is wrong: Wanted: \"%t\" - Got: \"%t\"", testValue.Input, testValue.Want, response)
+		}
+	}
+
+}
