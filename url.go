@@ -91,10 +91,10 @@ func stringSliceContains(a []string, x string) (int, bool) {
 }
 
 // isLive returns whether URL.Rawurl is live or not.
-func (u *URL) isLive() bool {
+func (u *URL) IsLive() bool {
 	// Set timeout.
 	client := nethttp.Client{
-		Timeout: 2 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 	_, err := client.Get(u.Rawurl)
 
