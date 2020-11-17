@@ -80,16 +80,6 @@ func NewURL(rawurl string) (*URL, error) {
 	}, nil
 }
 
-// stringSliceContains tells whether a contains x.
-func stringSliceContains(a []string, x string) (int, bool) {
-	for i, n := range a {
-		if x == n {
-			return i, true
-		}
-	}
-	return -1, false
-}
-
 // IsLive returns whether URL.Rawurl is live or not.
 func (u *URL) IsLive() bool {
 	// Set timeout.
@@ -103,6 +93,16 @@ func (u *URL) IsLive() bool {
 	}
 
 	return true
+}
+
+// stringSliceContains tells whether a contains x.
+func stringSliceContains(a []string, x string) (int, bool) {
+	for i, n := range a {
+		if x == n {
+			return i, true
+		}
+	}
+	return -1, false
 }
 
 // countryTopLevelDomains includes all country-code-top-level-domains.

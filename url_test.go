@@ -113,28 +113,6 @@ func TestNewURL(t *testing.T) {
 	}
 }
 
-func equalStringSlice(a, b []string) bool {
-	if a == nil && b == nil {
-		return true
-	}
-
-	if (a == nil) != (b == nil) {
-		return false
-	}
-
-	if len(a) != len(b) {
-		return false
-	}
-
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-
-	return true
-}
-
 func TestIsLive(t *testing.T) {
 	var testValues = []struct {
 		Input string
@@ -166,5 +144,26 @@ func TestIsLive(t *testing.T) {
 			t.Fatalf("[%s] Result from URL is wrong: Wanted: \"%t\" - Got: \"%t\"", testValue.Input, testValue.Want, response)
 		}
 	}
+}
 
+func equalStringSlice(a, b []string) bool {
+	if a == nil && b == nil {
+		return true
+	}
+
+	if (a == nil) != (b == nil) {
+		return false
+	}
+
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+
+	return true
 }
