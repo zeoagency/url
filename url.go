@@ -10,21 +10,21 @@ import (
 //
 // It works like this:
 //
-// Given URL:    "https://a.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=an+other+query"
+// Given URL:    "https://an.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=another+query"
 // Result:
-//   SUB_DOMAINS: a.awesome.blog
+//   SUB_DOMAINS: an.awesome.blog
 //   DOMAIN:      boratanrikulu"
 //   TLD:         dev
 //   C-TLD:       tr
 //   Path:        /blog/archlinux-install.html
-//   Queries:     q:a+lovely+query, z:an+other+query
+//   Queries:     q:a+lovely+query, z:another+query
 //
 // Example Usage:
 //
-// u := NewURL("https://a.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=an+other+query")
+// u := NewURL("https://an.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=an+other+query")
 // fmt.Println(u.TLD // "dev"
 // fmt.Println(u.CTLD) // "tr"
-// fmt.Println(u.Queries) // "[q:[a lovely query] z:[an other query]]"
+// fmt.Println(u.Queries) // "[q:[a lovely query] z:[another query]]"
 type URL struct {
 	Rawurl     string
 	Subdomains []string

@@ -16,6 +16,19 @@ var testValues = []struct {
 	ShouldFail       bool
 }{
 	{
+		Input:            "https://an.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=another+query",
+		WantedSubdomains: []string{"an", "awesome", "blog"},
+		WantedDomain:     "boratanrikulu",
+		WantedTLD:        "dev",
+		WantedCTLD:       "tr",
+		WantedPath:       "/blog/archlinux-install.html",
+		WantedQueries: map[string][]string{
+			"q": []string{"a", "lovely", "query"},
+			"z": []string{"another", "query"},
+		},
+		ShouldFail: false,
+	},
+	{
 		Input:            "https://boratanrikulu.dev/dns-guvenlik-sorunlari",
 		WantedSubdomains: []string{},
 		WantedDomain:     "boratanrikulu",
@@ -57,7 +70,7 @@ var testValues = []struct {
 	},
 }
 
-func TestExtractURL(t *testing.T) {
+func TestNewURL(t *testing.T) {
 	for _, testValue := range testValues {
 		fmt.Println(testValue.Input)
 
@@ -66,7 +79,7 @@ func TestExtractURL(t *testing.T) {
 			if err != nil {
 				continue
 			} else {
-				t.Fatalf("[%s] Error must be occured, but did not", testValue.Input)
+				t.Fatalf("[%s] Error must be occurred, but did not", testValue.Input)
 			}
 		}
 

@@ -15,12 +15,16 @@ import (
 )
 
 func main() {
-	u, err := url.NewURL("https://boratanrikulu.dev/dns-guvenlik-sorunlari/")
+	u, err := url.NewURL("https://an.awesome.blog.boratanrikulu.dev.tr/blog/archlinux-install.html?q=a+lovely+query&z=another+query")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fmt.Println(u.Domain) // boratanrikulu
-	fmt.Println(u.Path)   // /dns-guvenlik-sorunlari
+	fmt.Println(u.Subdomains) // ["an", "awesome", "blog"]
+	fmt.Println(u.Domain)     // "boratanrikulu"
+	fmt.Println(u.TLD)        // "dev"
+	fmt.Println(u.CTLD)       // "tr"
+	fmt.Println(u.Path)       // "/blog/archlinux-install.html"
+	fmt.Println(u.Queries)    // map[q:["a", "lovely", "query"], z:["another", "query"]
 }
 ```
