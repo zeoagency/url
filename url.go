@@ -45,16 +45,25 @@ func NewURL(rawurl string) (*URL, error) {
 	}
 
 	parts := strings.Split(u.Hostname(), ".")
-	tldCount := 1
-	if len(parts) >= 3 && stringSliceContains(countryTopLevelDomains, parts[len(parts)-1]) {
-		tldCount = 2
-	} else if len(parts) >= 2 && stringSliceContains(countryTopLevelDomains, parts[1]) {
-		tldCount = 1
+	if len(parts) < 2 {
+		return nil, errors.New("That's not a valid URL.")
 	}
 
-	// Check if parts count is okay.
-	if tldCount >= len(parts) {
-		return nil, errors.New("That's not a valid URL.")
+	tldCount := 1
+	if len(parts) == 2 {
+		if !(stringSliceContains(topLevelDomains, parts[1]) || stringSliceContains(countryTopLevelDomains, parts[1])) {
+			return nil, errors.New("That's not a valid URL.")
+		}
+		tldCount = 1
+	}
+	if len(parts) >= 3 {
+		if stringSliceContains(topLevelDomains, parts[len(parts)-2]) && stringSliceContains(countryTopLevelDomains, parts[len(parts)-1]) {
+			tldCount = 2
+		} else if stringSliceContains(topLevelDomains, parts[len(parts)-1]) {
+			tldCount = 1
+		} else {
+			return nil, errors.New("That's not a valid URL.")
+		}
 	}
 
 	// TLD
@@ -64,20 +73,6 @@ func NewURL(rawurl string) (*URL, error) {
 	var ctld string
 	if tldCount == 2 {
 		ctld = parts[len(parts)-1]
-	}
-
-	// Check if given tld is correct when there is only one tld.
-	// It will allow for all TLDs and CTLDs for the tld.
-	// For example, bora.com or bora.fi will be accepted.
-	if tldCount == 1 && (!stringSliceContains(topLevelDomains, tld) && !stringSliceContains(countryTopLevelDomains, tld)) {
-		return nil, errors.New("That's not a valid URL.")
-	}
-
-	// Check if given tld and ctld is corrent when there is two tlds.
-	// It will allow all tlds for the tld and all ctlds for the ctld.
-	// For example, bora.com.fi will be accepted.
-	if tldCount == 2 && (!stringSliceContains(topLevelDomains, tld) || !stringSliceContains(countryTopLevelDomains, ctld)) {
-		return nil, errors.New("That's not a valid URL.")
 	}
 
 	// Domain
