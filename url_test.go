@@ -108,17 +108,6 @@ var testValues = []struct {
 		ShouldFail:       false,
 	},
 	{
-		Input:            "https://api.seo.do.do",
-		WantedSubdomains: []string{"api"},
-		WantedDomain:     "seo",
-		WantedTLD:        "do",
-		WantedCTLD:       "do",
-		WantedFullDomain: "api.seo.do.do",
-		WantedPath:       "",
-		WantedQueries:    map[string][]string{},
-		ShouldFail:       false,
-	},
-	{
 		Input:            "",
 		WantedSubdomains: []string{},
 		WantedDomain:     "",
