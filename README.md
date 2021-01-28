@@ -1,6 +1,6 @@
 # ZEO.ORG - URL
 
-A tiny package that you extract your URLs by validating them.
+A tiny package that extracts your URLs by validating them.
 
 ## Usage
 
