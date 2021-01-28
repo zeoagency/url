@@ -11,6 +11,7 @@ var testValues = []struct {
 	WantedDomain     string
 	WantedTLD        string
 	WantedCTLD       string
+	WantedFullDomain string
 	WantedPath       string
 	WantedQueries    map[string][]string
 	ShouldFail       bool
@@ -21,6 +22,7 @@ var testValues = []struct {
 		WantedDomain:     "boratanrikulu",
 		WantedTLD:        "dev",
 		WantedCTLD:       "tr",
+		WantedFullDomain: "an.awesome.blog.boratanrikulu.dev.tr",
 		WantedPath:       "/blog/archlinux-install.html",
 		WantedQueries: map[string][]string{
 			"q": []string{"a", "lovely", "query"},
@@ -34,6 +36,7 @@ var testValues = []struct {
 		WantedDomain:     "boratanrikulu",
 		WantedTLD:        "dev",
 		WantedCTLD:       "",
+		WantedFullDomain: "boratanrikulu.dev",
 		WantedPath:       "/dns-guvenlik-sorunlari",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       false,
@@ -44,6 +47,7 @@ var testValues = []struct {
 		WantedDomain:     "",
 		WantedTLD:        "",
 		WantedCTLD:       "",
+		WantedFullDomain: "",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       true,
@@ -54,6 +58,7 @@ var testValues = []struct {
 		WantedDomain:     "bora",
 		WantedTLD:        "fi",
 		WantedCTLD:       "",
+		WantedFullDomain: "bora.fi",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       false,
@@ -64,6 +69,7 @@ var testValues = []struct {
 		WantedDomain:     "boratanrikulu",
 		WantedTLD:        "com",
 		WantedCTLD:       "tr",
+		WantedFullDomain: "boratanrikulu.com.tr",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       false,
@@ -71,9 +77,10 @@ var testValues = []struct {
 	{
 		Input:            "https://boratanrikulu.com.randomwrongctld",
 		WantedSubdomains: []string{},
-		WantedDomain:     "bora",
-		WantedTLD:        "com",
-		WantedCTLD:       "randomwrongctld",
+		WantedDomain:     "",
+		WantedTLD:        "",
+		WantedCTLD:       "",
+		WantedFullDomain: "",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       true,
@@ -81,9 +88,10 @@ var testValues = []struct {
 	{
 		Input:            "https://boratanrikulu.randomwrongtld",
 		WantedSubdomains: []string{},
-		WantedDomain:     "bora",
-		WantedTLD:        "randomwrongtld",
+		WantedDomain:     "",
+		WantedTLD:        "",
 		WantedCTLD:       "",
+		WantedFullDomain: "",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       true,
@@ -94,6 +102,7 @@ var testValues = []struct {
 		WantedDomain:     "seo",
 		WantedTLD:        "do",
 		WantedCTLD:       "",
+		WantedFullDomain: "api.seo.do",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       false,
@@ -104,6 +113,7 @@ var testValues = []struct {
 		WantedDomain:     "seo",
 		WantedTLD:        "do",
 		WantedCTLD:       "do",
+		WantedFullDomain: "api.seo.do.do",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       false,
@@ -114,6 +124,7 @@ var testValues = []struct {
 		WantedDomain:     "",
 		WantedTLD:        "",
 		WantedCTLD:       "",
+		WantedFullDomain: "",
 		WantedPath:       "",
 		WantedQueries:    map[string][]string{},
 		ShouldFail:       true,
@@ -187,9 +198,52 @@ func TestIsLive(t *testing.T) {
 	}
 
 	for _, testValue := range testValues {
-		u, _ := NewURL(testValue.Input)
-		response := u.IsLive()
+		u, err := NewURL(testValue.Input)
+		if err != nil {
+			t.Fatalf("Given raw url for the IsLive testing is not correct: %s", testValue.Input)
+		}
 
+		response := u.IsLive()
+		if response != testValue.Want {
+			t.Fatalf("[%s] Result from URL is wrong: Wanted: \"%t\" - Got: \"%t\"", testValue.Input, testValue.Want, response)
+		}
+	}
+}
+
+func TestIsRecorded(t *testing.T) {
+	var testValues = []struct {
+		Input string
+		Want  bool
+	}{
+		{
+			Input: "https://boratanrikulu.dev",
+			Want:  true,
+		},
+		{
+			Input: "https://boratanrikulu.dev/asdasd/asdasdas/asdasd",
+			Want:  true,
+		},
+		{
+			Input: "https://asdasd.asdasdas.asd.boratanrikulu.dev/asdasda/sdasd/asd/asd",
+			Want:  false,
+		},
+		{
+			Input: "https://api.seo.do/asdasda/sdasd/asd/asd",
+			Want:  true,
+		},
+		{
+			Input: "https://A8QAPDm68bjNc.org",
+			Want:  false,
+		},
+	}
+
+	for _, testValue := range testValues {
+		u, err := NewURL(testValue.Input)
+		if err != nil {
+			t.Fatalf("Given raw url for the IsRecorded testing is not correct: %s", testValue.Input)
+		}
+
+		response := u.IsRecorded()
 		if response != testValue.Want {
 			t.Fatalf("[%s] Result from URL is wrong: Wanted: \"%t\" - Got: \"%t\"", testValue.Input, testValue.Want, response)
 		}

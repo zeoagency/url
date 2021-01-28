@@ -2,6 +2,7 @@ package url
 
 import (
 	"errors"
+	"net"
 	nethttp "net/http"
 	neturl "net/url"
 	"strings"
@@ -33,6 +34,7 @@ type URL struct {
 	Domain     string
 	TLD        string
 	CTLD       string
+	FullDomain string
 	Path       string
 	Queries    map[string][]string
 }
@@ -79,25 +81,36 @@ func NewURL(rawurl string) (*URL, error) {
 	domain := parts[len(parts)-tldCount-1]
 	subDomains := parts[:len(parts)-tldCount-1]
 
-	return &URL{
+	url := &URL{
 		Rawurl:     rawurl,
 		Subdomains: subDomains,
 		Domain:     domain,
 		TLD:        tld,
 		CTLD:       ctld,
+		FullDomain: strings.Join(append(subDomains, domain, tld, ctld), "."),
 		Path:       u.EscapedPath(),
 		Queries:    u.Query(),
-	}, nil
+	}
+	return url, nil
 }
 
-// IsLive returns whether URL.Rawurl is live or not.
+// IsLive returns whether the URL is up.
 func (u *URL) IsLive() bool {
-	// Set timeout.
 	client := nethttp.Client{
 		Timeout: 5 * time.Second,
 	}
-	_, err := client.Get(u.Rawurl)
 
+	_, err := client.Get(u.Rawurl)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+// IsRecorded returns whether the URL's domain has a DNS record.
+func (u *URL) IsRecorded() bool {
+	_, err := net.LookupIP(u.FullDomain)
 	if err != nil {
 		return false
 	}
